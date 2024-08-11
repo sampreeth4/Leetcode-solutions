@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<int> sub; 
+    vector<vector<int>> side;
+
+    int dfs(int n, int p) {
+        int size = 1;  
+        for (int neigh : side[n]) {
+            if (neigh != p) size += dfs(neigh, n);
+        }
+        sub[n] = size;
+        return size;
+    }
+    int countGoodNodes(vector<vector<int>>& edges) {
+        int n = edges.size() + 1;
+        side.resize(n);
+        sub.resize(n);        
+        for (auto& e : edges) {
+            side[e[0]].push_back(e[1]);
+            side[e[1]].push_back(e[0]);
+        }
+        dfs(0, -1);
+        int res = 0;
+        for (int node = 0; node < n; ++node) {
+            unordered_set<int> c;
+            for (int neigh : side[node]) {
+                if (sub[neigh] < sub[node]) c.insert(sub[neigh]); 
+            }
+            if (c.size() <= 1) res++;
+        }
+        return res;
+    }
+};
